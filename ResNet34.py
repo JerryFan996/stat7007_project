@@ -14,9 +14,9 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 # 路径和超参数
 data_dir = 'chest_xray_lung'
-batch_size = 32
-num_epochs = 20
-learning_rate = 0.00005
+batch_size = 256
+num_epochs = 5
+learning_rate = 0.00001
 
 # 数据增强
 data_transforms = {
