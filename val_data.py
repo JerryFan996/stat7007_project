@@ -18,6 +18,7 @@ def move_images(train_dir, val_dir, split_ratio=0.2):
     print(f"Moved {num_to_move} images from {train_dir} to {val_dir}.")
 
 
-train_dir = 'chest_xray_lung/train/PNEUMONIA'
-val_dir = 'chest_xray_lung/val/PNEUMONIA'
+train_dir = 'chest_xray_lung/train/NORMAL'
+val_dir = 'chest_xray_lung/val/NORMAL'
+
 move_images(train_dir, val_dir, split_ratio=0.2)
