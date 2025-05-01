@@ -8,8 +8,9 @@ output_folder = "chest_xray_lung_low_res"
 # Create the output folder if it doesn't exist
 os.makedirs(output_folder, exist_ok=True)
 
-# Define the resolution reduction factor (e.g., 2 means reducing resolution by half)
-reduction_factor = 2
+# Define the target resolution
+target_width = 224
+target_height = 224
 
 # Walk through all subdirectories and files in the input folder
 for root, _, files in os.walk(input_folder):
@@ -26,14 +27,10 @@ for root, _, files in os.walk(input_folder):
 
             # Open the image
             with Image.open(input_path) as img:
-                # Calculate new dimensions
-                new_width = img.width // reduction_factor
-                new_height = img.height // reduction_factor
+                # Resize the image to 224x224
+                img_low_res = img.resize((target_width, target_height), Image.Resampling.LANCZOS)
 
-                # Resize the image
-                img_low_res = img.resize((new_width, new_height), Image.Resampling.LANCZOS)
-
-                # Save the low-resolution image to the output folder
+                # Save the resized image to the output folder
                 img_low_res.save(output_path)
 
-print(f"Low-resolution images have been saved to '{output_folder}'.")
+print(f"Images have been resized to {target_width}x{target_height} and saved to '{output_folder}'.")
