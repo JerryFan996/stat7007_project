@@ -6,7 +6,7 @@ from sklearn.metrics import classification_report
 from sklearn.preprocessing import LabelEncoder
 
 # set random seed for reproducibility
-def load_data(folder, image_size=(64, 64)):
+def load_data(folder, image_size=(224, 224)):
     X, y = [], []
     for label in os.listdir(folder):
         class_path = os.path.join(folder, label)
