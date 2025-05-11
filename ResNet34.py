@@ -10,17 +10,15 @@ import seaborn as sns
 import numpy as np
 
 
-
-# 设置设备
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-# 路径和超参数
+# path to the dataset
 data_dir = 'chest_xray_lung'
 batch_size = 256
-num_epochs = 5
+num_epochs = 20
 learning_rate = 0.00005
 
-# 数据增强
+# data augmentation and normalization for training
 data_transforms = {
     'train': transforms.Compose([
         transforms.Resize((224, 224)),
@@ -62,7 +60,6 @@ def load_data():
 
 
 def compute_class_weights(dataset):
-    # 统计每个类别的样本数
     labels = [label for _, label in dataset]
     labels_tensor = torch.tensor(labels)
     class_counts = torch.bincount(labels_tensor)
@@ -107,7 +104,6 @@ def train_model(model, dataloaders, dataset_sizes, class_weights):
                         loss.backward()
                         optimizer.step()
 
-                        # --- 只在train阶段记录学习率和梯度 ---
                         current_lr = optimizer.param_groups[0]['lr']
                         lrs.append(current_lr)
 
@@ -142,11 +138,10 @@ def evaluate_model(model, dataloader, class_names):
             y_true.extend(labels.tolist())
             y_pred.extend(preds.cpu().tolist())
 
-    # 打印分类报告
     print("\n📋 Classification Report:")
     print(classification_report(y_true, y_pred, target_names=class_names))
 
-    # 混淆矩阵可视化
+    # visualize confusion matrix
     cm = confusion_matrix(y_true, y_pred)
     plt.figure(figsize=(6, 5))
     sns.heatmap(cm, annot=True, fmt='d', xticklabels=class_names, yticklabels=class_names, cmap='Blues')
@@ -165,7 +160,7 @@ def replace_relu_with(model, new_activation):
 
 def plot_lr_and_gradients(lrs, grads):
     print("\n📈 Plotting Learning Rate and Gradient Norms...")
-    steps = np.arange(len(lrs))  # 每个记录对应一个训练step
+    steps = np.arange(len(lrs))
     fig, ax1 = plt.subplots(figsize=(8, 5))
 
     ax1.set_xlabel('Training Step')
@@ -184,15 +179,13 @@ def plot_lr_and_gradients(lrs, grads):
 
 
 def main():
-    # 加载数据
     image_datasets, dataloaders = load_data()
     class_names = image_datasets['train'].classes
     dataset_sizes = {x: len(image_datasets[x]) for x in ['train', 'val']}
 
-    # 计算类别权重
+    # compute class weights
     class_weights = compute_class_weights(image_datasets['train'])
 
-    # 加载模型
     model = models.resnet34(weights=ResNet34_Weights.DEFAULT)
     num_ftrs = model.fc.in_features
     model.fc = nn.Linear(num_ftrs, 3)
